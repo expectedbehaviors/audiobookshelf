@@ -1,0 +1,135 @@
+# Baseline Audiobookshelf values. Override ingress, persistence paths, and TOKEN_SECRET in your deployment values.
+audiobookshelf:
+  global:
+    fullnameOverride: audiobookshelf
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 1000
+      runAsGroup: 1000
+      runAsUser: 1000
+      fsGroupChangePolicy: Always
+  controllers:
+    main:
+      enabled: true
+      type: deployment
+      replicas: 1
+      containers:
+        main:
+          image:
+            repository: ghcr.io/advplyr/audiobookshelf
+            tag: latest
+            pullPolicy: IfNotPresent
+          env:
+            TZ: UTC
+          envFrom:
+            - secretRef:
+                name: audiobookshelf-secrets
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthcheck
+                  port: 80
+                initialDelaySeconds: 10
+                periodSeconds: 15
+                timeoutSeconds: 3
+                failureThreshold: 3
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthcheck
+                  port: 80
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                timeoutSeconds: 2
+                failureThreshold: 3
+            startup:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthcheck
+                  port: 80
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                timeoutSeconds: 2
+                failureThreshold: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+  service:
+    main:
+      enabled: true
+      controller: main
+      primary: true
+      ports:
+        http:
+          enabled: true
+          primary: true
+          port: 80
+  ingress:
+    main:
+      enabled: true
+      className: nginx
+      annotations: {}
+      hosts:
+        - host: audiobookshelf.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: http
+      tls:
+        - hosts:
+            - audiobookshelf.example.com
+          secretName: audiobookshelf-tls
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteOnce
+      size: 5Gi
+      storageClass: ""
+      globalMounts:
+        - path: /config
+          readOnly: false
+    metadata:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteOnce
+      size: 20Gi
+      storageClass: ""
+      globalMounts:
+        - path: /metadata
+          readOnly: false
+    audiobooks:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteMany
+      size: 100Gi
+      storageClass: ""
+      globalMounts:
+        - path: /audiobooks
+          readOnly: false
+    podcasts:
+      enabled: true
+      type: persistentVolumeClaim
+      accessMode: ReadWriteOnce
+      size: 50Gi
+      storageClass: ""
+      globalMounts:
+        - path: /podcasts
+          readOnly: false
+
+onepassworditem:
+  enabled: true
+  items: []
