@@ -1,0 +1,34 @@
+apiVersion: v1
+entries:
+  audiobookshelf:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-10T02:40:52.024680601Z"
+    dependencies:
+    - alias: audiobookshelf
+      name: app-template
+      repository: https://bjw-s-labs.github.io/helm-charts
+      version: 4.6.2
+    - name: onepassworditem
+      repository: https://expectedbehaviors.github.io/OnePasswordItem-helm
+      version: 1.1.1
+    description: Audiobookshelf — self-hosted audiobook and podcast server. bjw-s
+      app-template baseline.
+    digest: b659cb0c1c0cf560c85a72a1bf06e9364c1e779e71a74a88494a56db64b37eb4
+    home: https://www.audiobookshelf.org
+    keywords:
+    - audiobookshelf
+    - audiobooks
+    - podcasts
+    - bjw-s
+    - app-template
+    kubeVersion: '>=1.28.0-0'
+    name: audiobookshelf
+    sources:
+    - https://github.com/advplyr/audiobookshelf
+    - https://github.com/bjw-s/helm-charts
+    type: application
+    urls:
+    - https://expectedbehaviors.github.io/audiobookshelf/audiobookshelf-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-06-10T02:40:52.017331899Z"
